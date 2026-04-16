@@ -59,7 +59,7 @@
 <div class="row mb-4">
     <div class="col-md-4 mb-3">
         <div class="card shadow-sm stat-card blue">
-            <div class="card-   body">
+            <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <p class="text-muted mb-0">Tổng Người Dùng</p>
@@ -175,13 +175,13 @@
                         </a>
                     </div>
                     <div class="col-md-6 col-lg-4 mb-3">
-                        <a href="#" class="btn btn-outline-warning menu-btn w-100" disabled>
+                        <a href="/orders" class="btn btn-outline-warning menu-btn w-100">
                             <i class="bi bi-cart"></i><br>
                             <small>Quản Lý Đơn Hàng</small>
                         </a>
                     </div>
                     <div class="col-md-6 col-lg-4 mb-3">
-                        <a href="#" class="btn btn-outline-info menu-btn w-100" disabled>
+                        <a href="/report" class="btn btn-outline-info menu-btn w-100">
                             <i class="bi bi-graph-up"></i><br>
                             <small>Báo Cáo Thống Kê</small>
                         </a>

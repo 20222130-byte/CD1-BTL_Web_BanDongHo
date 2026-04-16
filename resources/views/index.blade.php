@@ -28,6 +28,15 @@
         <i class="bi bi-speedometer2"></i> Vào Dashboard
     </a>
 </div>
+@elseif (session('logged_in'))
+<div class="alert alert-info alert-dismissible d-flex justify-content-between align-items-center mb-4" role="alert">
+    <div>
+        <i class="bi bi-speedometer2"></i> <strong>Bảng điều khiển</strong> - Xem thông tin và báo cáo
+    </div>
+    <a href="/dashboard" class="btn btn-info text-white">
+        <i class="bi bi-speedometer2"></i> Vào Dashboard
+    </a>
+</div>
 @endif
 
 <div class="mb-4">
@@ -43,7 +52,9 @@
                     <h5 class="card-title text-primary fw-bold">Đồng Hồ {{ $i }}</h5>
                     <p class="card-text text-muted">Chất lượng premium, bảo hành 2 năm</p>
                     <p class="card-text text-danger"><strong>Giá: {{ number_format(rand(1000000,5000000), 0, ',', '.') }} VNĐ</strong></p>
-                    <button class="btn btn-primary w-100">Xem Chi Tiết</button>
+                    <a href="/product/{{ $i }}" class="btn btn-primary w-100">
+                        <i class="bi bi-eye"></i> Xem Chi Tiết
+                    </a>
                 </div>
             </div>
         </div>

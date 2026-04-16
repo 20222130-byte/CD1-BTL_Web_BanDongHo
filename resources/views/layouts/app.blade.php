@@ -47,11 +47,16 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <li class="nav-item me-2">
+                    <a href="/cart" class="btn btn-outline-light">
+                        <i class="bi bi-cart"></i> Giỏ Hàng
+                    </a>
+                </li>
                 @if (session('logged_in'))
                     <li class="nav-item me-3">
                         <div class="user-info">
                             <i class="bi bi-person-circle"></i>
-                            {{ session('full_name') }} 
+                            {{ session('full_name') }}
                             @if (session('role') === 'admin')
                                 <span class="badge bg-warning">Admin</span>
                             @endif
