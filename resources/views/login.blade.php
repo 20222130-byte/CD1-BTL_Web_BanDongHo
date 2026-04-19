@@ -26,10 +26,11 @@
 
                 <form method="POST" action="/login">
                     @csrf
+                    <input type="hidden" name="next" value="{{ $next ?? '' }}">
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Tên tài khoản hoặc Email</label>
-                        <input type="text" name="username_or_email" class="form-control @error('username_or_email') is-invalid @enderror" 
+                        <input type="text" name="username_or_email" class="form-control @error('username_or_email') is-invalid @enderror"
                                value="{{ old('username_or_email') }}" placeholder="Nhập tên tài khoản hoặc email">
                         @error('username_or_email')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -38,7 +39,7 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Mật khẩu</label>
-                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" 
+                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
                                placeholder="Nhập mật khẩu">
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>

@@ -58,8 +58,8 @@
                             <button class="btn btn-primary btn-lg" onclick="addToCart({{ $product_id }})">
                                 <i class="bi bi-cart-plus"></i> Thêm Vào Giỏ Hàng
                             </button>
-                            <button class="btn btn-outline-secondary btn-lg" onclick="toggleWishlist({{ $product_id }})">
-                                <i class="bi bi-heart"></i> Yêu Thích
+                            <button id="wishlist-btn" class="btn btn-outline-secondary btn-lg" onclick="toggleWishlist({{ $product_id }})">
+                                <i id="wishlist-icon" class="bi bi-heart"></i> Yêu Thích
                             </button>
                         </div>
                     </div>
@@ -91,7 +91,24 @@
 </div>
 
 <script>
+    const isLoggedIn = @json(session('logged_in') === true);
+
     function addToCart(productId) {
+        if (!isLoggedIn) {
+            const pending = JSON.parse(localStorage.getItem('pendingCart')) || [];
+            const existing = pending.find(item => item.id === productId);
+
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                pending.push({ id: productId, quantity: 1 });
+            }
+
+            localStorage.setItem('pendingCart', JSON.stringify(pending));
+            window.location.href = '/login?next=/cart';
+            return;
+        }
+
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const productIndex = cart.findIndex(item => item.id === productId);
 
@@ -120,11 +137,23 @@
     function toggleWishlist(productId) {
         const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
         const index = wishlist.indexOf(productId);
+        const wishlistBtn = document.getElementById('wishlist-btn');
+        const wishlistIcon = document.getElementById('wishlist-icon');
 
         if (index > -1) {
             wishlist.splice(index, 1);
+            wishlistIcon.classList.remove('bi-heart-fill');
+            wishlistIcon.classList.add('bi-heart');
+            wishlistBtn.classList.remove('btn-danger');
+            wishlistBtn.classList.add('btn-outline-secondary');
+            message_text = 'Đã xóa khỏi danh sách yêu thích!';
         } else {
             wishlist.push(productId);
+            wishlistIcon.classList.remove('bi-heart');
+            wishlistIcon.classList.add('bi-heart-fill');
+            wishlistBtn.classList.remove('btn-outline-secondary');
+            wishlistBtn.classList.add('btn-danger');
+            message_text = 'Đã thêm vào danh sách yêu thích!';
         }
 
         localStorage.setItem('wishlist', JSON.stringify(wishlist));
@@ -133,7 +162,7 @@
         const message = document.createElement('div');
         message.className = 'alert alert-info alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
         message.innerHTML = `
-            <i class="bi bi-heart-fill"></i> ${index > -1 ? 'Đã xóa khỏi danh sách yêu thích!' : 'Đã thêm vào danh sách yêu thích!'}
+            <i class="bi bi-heart-fill"></i> ${message_text}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         document.body.appendChild(message);
@@ -142,6 +171,21 @@
             message.remove();
         }, 3000);
     }
+
+    // Khởi tạo trạng thái wishlist khi trang load
+    document.addEventListener('DOMContentLoaded', function () {
+        const productId = {{ $product_id }};
+        const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        const wishlistBtn = document.getElementById('wishlist-btn');
+        const wishlistIcon = document.getElementById('wishlist-icon');
+
+        if (wishlist.includes(productId)) {
+            wishlistIcon.classList.remove('bi-heart');
+            wishlistIcon.classList.add('bi-heart-fill');
+            wishlistBtn.classList.remove('btn-outline-secondary');
+            wishlistBtn.classList.add('btn-danger');
+        }
+    });
 </script>
 
 @endsection

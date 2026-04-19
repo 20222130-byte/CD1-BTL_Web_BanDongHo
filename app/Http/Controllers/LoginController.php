@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LoginModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -19,7 +20,7 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        return view('login');
+        return view('login', ['next' => request('next')]);
     }
 
     /**
@@ -51,6 +52,11 @@ class LoginController extends Controller
                 'role' => $user->role,
                 'logged_in' => true
             ]);
+
+            $next = $request->input('next');
+            if ($next && Str::startsWith($next, '/')) {
+                return redirect($next)->with('success', 'Đăng nhập thành công');
+            }
 
             // Redirect dựa trên role
             if ($user->role === 'admin') {

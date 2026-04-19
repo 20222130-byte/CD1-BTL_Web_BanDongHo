@@ -48,7 +48,12 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item me-2">
-                    <a href="/cart" class="btn btn-outline-light">
+                    <a href="/wishlist" class="btn btn-outline-light">
+                        <i class="bi bi-heart"></i> Yêu Thích
+                    </a>
+                </li>
+                <li class="nav-item me-2">
+                    <a href="@if(session('logged_in'))/cart @else /login?next=/cart @endif" class="btn btn-outline-light">
                         <i class="bi bi-cart"></i> Giỏ Hàng
                     </a>
                 </li>
