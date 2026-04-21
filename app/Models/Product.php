@@ -44,7 +44,6 @@ class Product
                 'stock' => $data['stock'] ?? null,
                 'image_url' => $data['image_url'] ?? null,
                 'category_id' => $data['category_id'] ?? null,
-                'updated_at' => now(),
             ]);
     }
 

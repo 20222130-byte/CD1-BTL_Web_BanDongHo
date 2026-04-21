@@ -43,7 +43,6 @@ class User
             'phone' => $data['phone'] ?? null,
             'address' => $data['address'] ?? null,
             'role' => $data['role'] ?? null,
-            'updated_at' => now(),
         ];
 
         if (isset($data['password']) && !empty($data['password'])) {

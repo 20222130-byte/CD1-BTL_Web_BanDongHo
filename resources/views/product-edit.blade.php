@@ -109,10 +109,10 @@
                         <ul class="mb-0 mt-2">
                             <li>ID: <strong>{{ $product->product_id }}</strong></li>
                             <li>Ngày Tạo: <strong>{{ $product->created_at ? \Carbon\Carbon::parse($product->created_at)->format('d/m/Y H:i') : 'N/A' }}</strong></li>
-                            <li>Ngày Cập Nhật: <strong>{{ $product->updated_at ? \Carbon\Carbon::parse($product->updated_at)->format('d/m/Y H:i') : 'N/A' }}</strong></li>
+                            
                         </ul>
                     </div>
-                </div>
+                </div>  
             </div>
         </div>
     </div>

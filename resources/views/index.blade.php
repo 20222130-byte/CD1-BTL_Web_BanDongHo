@@ -28,15 +28,6 @@
         <i class="bi bi-speedometer2"></i> Vào Dashboard
     </a>
 </div>
-@elseif (session('logged_in'))
-<div class="alert alert-info alert-dismissible d-flex justify-content-between align-items-center mb-4" role="alert">
-    <div>
-        <i class="bi bi-speedometer2"></i> <strong>Bảng điều khiển</strong> - Xem thông tin và báo cáo
-    </div>
-    <a href="/dashboard" class="btn btn-info text-white">
-        <i class="bi bi-speedometer2"></i> Vào Dashboard
-    </a>
-</div>
 @endif
 
 <div class="mb-4">

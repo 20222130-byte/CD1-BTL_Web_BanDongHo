@@ -126,7 +126,7 @@
                         <ul class="mb-0 mt-2">
                             <li>ID: <strong>{{ $user->user_id }}</strong></li>
                             <li>Ngày Tạo: <strong>{{ $user->created_at ? \Carbon\Carbon::parse($user->created_at)->format('d/m/Y H:i') : 'N/A' }}</strong></li>
-                            <li>Ngày Cập Nhật: <strong>{{ $user->updated_at ? \Carbon\Carbon::parse($user->updated_at)->format('d/m/Y H:i') : 'N/A' }}</strong></li>
+                           
                         </ul>
                     </div>
                 </div>
