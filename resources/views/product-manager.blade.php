@@ -4,9 +4,14 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Quản Lý Sản Phẩm</h1>
-        <a href="/product-create" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Thêm Sản Phẩm
-        </a>
+        <div>
+            <a href="/category-manager" class="btn btn-secondary me-2">
+                <i class="bi bi-tags"></i> Quản Lý Danh Mục
+            </a>
+            <a href="/product-create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Thêm Sản Phẩm
+            </a>
+        </div>
     </div>
 
     {{-- Stats Cards --}}
@@ -60,6 +65,37 @@
         </div>
     @endif
 
+    {{-- Search Form --}}
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="/product-manager" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm..." value="{{ request('search') }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="category" class="form-select">
+                        <option value="">Tất cả danh mục</option>
+                        @if(isset($categories))
+                            @foreach($categories as $category)
+                                <option value="{{ $category->category_id }}" {{ request('category') == $category->category_id ? 'selected' : '' }}>{{ $category->category_name }}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Tìm
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a href="/product-manager" class="btn btn-secondary w-100">
+                        <i class="bi bi-x-circle"></i> Xóa
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Products Table --}}
     <div class="card">
         <div class="table-responsive">
@@ -68,6 +104,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Tên Sản Phẩm</th>
+                        <th>Danh Mục</th>
                         <th>Giá</th>
                         <th>Kho</th>
                         <th>Mô Tả</th>
@@ -80,6 +117,16 @@
                         <tr>
                             <td><strong>#{{ $product->product_id }}</strong></td>
                             <td>{{ $product->product_name }}</td>
+                            <td>
+                                @if($product->category_id)
+                                    @php
+                                        $categoryName = $categories->where('category_id', $product->category_id)->first()->category_name ?? 'N/A';
+                                    @endphp
+                                    {{ $categoryName }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
                             <td>{{ number_format($product->price) }} ₫</td>
                             <td>
                                 @if($product->stock > 20)
@@ -117,3 +164,4 @@
     </div>
 </div>
 @endsection
+

@@ -34,22 +34,46 @@
     <h2 class="text-center">Danh Sách Sản Phẩm Đồng Hồ</h2>
 </div>
 
+<!-- Search and Filter Form -->
+<div class="mb-4">
+    <form method="GET" action="/" class="d-flex justify-content-center align-items-center gap-3">
+        <div class="input-group" style="max-width: 300px;">
+            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm..." value="{{ request('search') }}">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search"></i> Tìm Kiếm
+            </button>
+        </div>
+        <select name="category" class="form-select" style="max-width: 200px;" onchange="this.form.submit()">
+            <option value="">Tất cả danh mục</option>
+            @if(isset($categories))
+                @foreach($categories as $category)
+                    <option value="{{ $category->category_id }}" {{ request('category') == $category->category_id ? 'selected' : '' }}>{{ $category->category_name }}</option>
+                @endforeach
+            @endif
+        </select>
+    </form>
+</div>
+
 <div class="row">
-    @for ($i = 1; $i <= 6; $i++)
+    @forelse ($products as $product)
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm hover-card" style="transition: transform 0.3s;">
-                <img src="https://via.placeholder.com/300x200?text=Đồng+Hồ+{{ $i }}" class="card-img-top">
+                <img src="{{ $product->image_url ?? 'https://via.placeholder.com/300x200?text=No+Image' }}" class="card-img-top" alt="{{ $product->product_name }}">
                 <div class="card-body">
-                    <h5 class="card-title text-primary fw-bold">Đồng Hồ {{ $i }}</h5>
-                    <p class="card-text text-muted">Chất lượng premium, bảo hành 2 năm</p>
-                    <p class="card-text text-danger"><strong>Giá: {{ number_format(rand(1000000,5000000), 0, ',', '.') }} VNĐ</strong></p>
-                    <a href="/product/{{ $i }}" class="btn btn-primary w-100">
+                    <h5 class="card-title text-primary fw-bold">{{ $product->product_name }}</h5>
+                    <p class="card-text text-muted">{{ $product->description ?? 'Chất lượng premium, bảo hành 2 năm' }}</p>
+                    <p class="card-text text-danger"><strong>Giá: {{ number_format($product->price, 0, ',', '.') }} VNĐ</strong></p>
+                    <a href="/product/{{ $product->product_id }}" class="btn btn-primary w-100">
                         <i class="bi bi-eye"></i> Xem Chi Tiết
                     </a>
                 </div>
             </div>
         </div>
-    @endfor
+    @empty
+        <div class="col-12">
+            <p class="text-center text-muted">Chưa có sản phẩm nào.</p>
+        </div>
+    @endforelse
 </div>
 
 <style>

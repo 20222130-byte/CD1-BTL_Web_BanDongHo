@@ -10,9 +10,7 @@ use App\Http\Controllers\ProductManagerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserManagerController;
 
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/', [ProductController::class, 'index']);
 
 // Product Routes
 Route::get('/product/{id}', [ProductController::class, 'show']);
@@ -63,3 +61,9 @@ Route::post('/user-update/{id}', [UserManagerController::class, 'update']);
 Route::post('/user-delete/{id}', [UserManagerController::class, 'delete']);
 
 
+// Category Manager Routes (Admin)
+Route::get('/category-manager', [ProductManagerController::class, 'categoryIndex']);
+Route::post('/category-store', [ProductManagerController::class, 'categoryStore']);
+Route::get('/category-edit/{id}', [ProductManagerController::class, 'categoryEdit']);
+Route::post('/category-update/{id}', [ProductManagerController::class, 'categoryUpdate']);
+Route::get('/category-delete/{id}', [ProductManagerController::class, 'categoryDelete']);

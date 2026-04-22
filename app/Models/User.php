@@ -4,69 +4,53 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
 
-class User
+class Report
 {
-    public static function getAllUsers()
-    {
-        return DB::table('users')
-            ->orderByDesc('created_at')
-            ->get();
-    }
-
-    public static function getUserById($id)
-    {
-        return DB::table('users')
-            ->where('user_id', $id)
-            ->first();
-    }
-
-    public static function createUser($data)
-    {
-        return DB::table('users')->insertGetId([
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'full_name' => $data['full_name'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'address' => $data['address'] ?? null,
-            'role' => $data['role'] ?? 'customer',
-            'created_at' => now(),
-        ]);
-    }
-
-    public static function updateUser($id, $data)
-    {
-        $updateData = [
-            'username' => $data['username'] ?? null,
-            'email' => $data['email'] ?? null,
-            'full_name' => $data['full_name'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'address' => $data['address'] ?? null,
-            'role' => $data['role'] ?? null,
-        ];
-
-        if (isset($data['password']) && !empty($data['password'])) {
-            $updateData['password'] = bcrypt($data['password']);
-        }
-
-        return DB::table('users')
-            ->where('user_id', $id)
-            ->update($updateData);
-    }
-
-    public static function deleteUser($id)
-    {
-        return DB::table('users')
-            ->where('user_id', $id)
-            ->delete();
-    }
-
-    public static function getUserStats()
+    public static function getSummary()
     {
         return [
             'total_users' => DB::table('users')->count(),
-            'admin_users' => DB::table('users')->where('role', 'admin')->count(),
-            'customer_users' => DB::table('users')->where('role', 'customer')->count(),
+            'total_products' => DB::table('products')->count(),
+            'total_orders' => DB::table('orders')->count(),
+            'total_revenue' => DB::table('orders')->sum('total_amount') ?? 0,
+            'total_payments' => DB::table('payments')->count(),
         ];
+    }
+
+    public static function getOrderStatuses()
+    {
+        return DB::table('orders')
+            ->select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->get();
+    }
+
+    public static function getPaymentStatuses()
+    {
+        return DB::table('payments')
+            ->select('payment_status', DB::raw('count(*) as count'))
+            ->groupBy('payment_status')
+            ->get();
+    }
+
+    public static function getTopProducts()
+    {
+        return DB::table('order_details')
+            ->join('products', 'order_details.product_id', '=', 'products.product_id')
+            ->select('products.product_name', DB::raw('SUM(order_details.quantity) as sold_quantity'))
+            ->groupBy('products.product_name')
+            ->orderByDesc('sold_quantity')
+            ->limit(5)
+            ->get();
+    }
+
+    public static function getRecentOrders()
+    {
+        return DB::table('orders')
+            ->leftJoin('users', 'orders.user_id', '=', 'users.user_id')
+            ->select('orders.order_id', 'orders.order_date', 'orders.total_amount', 'orders.status', 'users.full_name', 'users.username')
+            ->orderByDesc('orders.order_date')
+            ->limit(5)
+            ->get();
     }
 }
