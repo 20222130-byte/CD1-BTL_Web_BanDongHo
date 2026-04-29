@@ -5,9 +5,9 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">
-                        <i class="bi bi-pencil-square"></i> Chỉnh Sửa Sản Phẩm #{{ $product->product_id }}
+                <div class="card-header text-white" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <h5 class="mb-0 py-2 fw-bold">
+                        <i class="bi bi-pencil-square me-2"></i> Chỉnh Sửa Sản Phẩm #{{ $product->product_id }}
                     </h5>
                 </div>
                 <div class="card-body">
@@ -30,7 +30,7 @@
                         </div>
                     @endif
 
-                    <form action="/product-update/{{ $product->product_id }}" method="POST">
+                    <form action="/product-update/{{ $product->product_id }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="mb-3">
@@ -75,18 +75,38 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="image_url" class="form-label">URL Hình Ảnh</label>
-                            <input type="url" class="form-control @error('image_url') is-invalid @enderror"
-                                   id="image_url" name="image_url" value="{{ old('image_url', $product->image_url) }}" placeholder="https://...">
-                            @error('image_url')
+                            <label for="image" class="form-label">Thay Đổi Hình Ảnh Sản Phẩm</label>
+                            <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                   id="image" name="image" accept="image/*">
+                            @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            
+                            @if($product->image_url)
+                                <div class="mt-2">
+                                    <p class="small text-muted mb-1">Hình ảnh hiện tại:</p>
+                                    <img src="{{ $product->image_url }}" alt="Current Image" class="img-thumbnail" style="max-height: 150px;">
+                                </div>
+                            @endif
                         </div>
 
                         <div class="mb-3">
-                            <label for="category_id" class="form-label">Danh Mục ID</label>
-                            <input type="number" class="form-control @error('category_id') is-invalid @enderror"
-                                   id="category_id" name="category_id" value="{{ old('category_id', $product->category_id) }}" min="0">
+                            <label for="category_id" class="form-label">Danh Mục</label>
+                            <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id">
+                                <option value="">-- Chọn danh mục --</option>
+                                @php
+                                    $groupedCats = collect($categories)->groupBy('description');
+                                @endphp
+                                @foreach($groupedCats as $group => $cats)
+                                    <optgroup label="{{ $group ?: 'Khác' }}">
+                                        @foreach($cats as $category)
+                                            <option value="{{ $category->category_id }}" {{ old('category_id', $product->category_id) == $category->category_id ? 'selected' : '' }}>
+                                                {{ $category->category_name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
                             @error('category_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

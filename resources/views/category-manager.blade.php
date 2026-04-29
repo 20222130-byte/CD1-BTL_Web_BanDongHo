@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="container mt-4">
@@ -24,40 +24,46 @@
         </div>
     @endif
 
-    <div class="card">
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên Danh Mục</th>
-                        <th>Mô Tả</th>
-                        <th>Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($categories as $category)
-                        <tr>
-                            <td>{{ $category->category_id }}</td>
-                            <td>{{ $category->category_name }}</td>
-                            <td>{{ $category->description ?? 'N/A' }}</td>
-                            <td>
-                                <a href="/category-edit/{{ $category->category_id }}" class="btn btn-sm btn-warning">
-                                    <i class="bi bi-pencil"></i> Sửa
+    @php
+        $groupedCategories = collect($categories)->groupBy('description');
+    @endphp
+
+    <div class="row">
+        @forelse($groupedCategories as $groupName => $cats)
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h5 class="fw-bold text-primary">
+                        <i class="bi bi-diamond-fill text-info me-2" style="font-size: 0.8rem;"></i>
+                        {{ $loop->iteration }}. {{ $groupName ?: 'Khác' }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach($cats as $category)
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0 pb-2 pt-2">
+                            <div class="fs-6 text-dark">
+                                <span class="me-2 text-muted">•</span> {{ $category->category_name }}
+                            </div>
+                            <div>
+                                <a href="/category-edit/{{ $category->category_id }}" class="btn btn-sm btn-outline-warning rounded-circle me-1" title="Sửa">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="/category-delete/{{ $category->category_id }}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">
-                                    <i class="bi bi-trash"></i> Xóa
+                                <a href="/category-delete/{{ $category->category_id }}" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">
+                                    <i class="bi bi-trash"></i>
                                 </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center">Chưa có danh mục nào.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            </div>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         </div>
+        @empty
+        <div class="col-12">
+            <div class="alert alert-info text-center py-4">Chưa có danh mục nào.</div>
+        </div>
+        @endforelse
     </div>
 </div>
 
@@ -77,8 +83,13 @@
                         <input type="text" class="form-control" id="category_name" name="category_name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">Mô Tả</label>
-                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        <label for="description" class="form-label">Nhóm Danh Mục (Mô Tả)</label>
+                        <input type="text" class="form-control" id="description" name="description" list="groupOptions" placeholder="Chọn hoặc nhập nhóm mới...">
+                        <datalist id="groupOptions">
+                            @foreach($groups as $group)
+                                <option value="{{ $group }}">
+                            @endforeach
+                        </datalist>
                     </div>
                 </div>
                 <div class="modal-footer">

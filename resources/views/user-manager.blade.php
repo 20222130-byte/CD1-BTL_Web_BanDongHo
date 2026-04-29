@@ -12,26 +12,29 @@
     {{-- Stats Cards --}}
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Tổng Người Dùng</h5>
-                    <h2>{{ $stats['total_users'] }}</h2>
+            <div class="card text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-people fs-1 mb-2" style="opacity: 0.8;"></i>
+                    <h5 class="card-title fw-normal">Tổng Người Dùng</h5>
+                    <h2 class="fw-bold mb-0">{{ $stats['total_users'] }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-danger text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Quản Trị Viên</h5>
-                    <h2>{{ $stats['admin_users'] }}</h2>
+            <div class="card text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-person-badge fs-1 mb-2" style="opacity: 0.8;"></i>
+                    <h5 class="card-title fw-normal">Quản Trị Viên</h5>
+                    <h2 class="fw-bold mb-0">{{ $stats['admin_users'] }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Khách Hàng</h5>
-                    <h2>{{ $stats['customer_users'] }}</h2>
+            <div class="card text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-person fs-1 mb-2" style="opacity: 0.8;"></i>
+                    <h5 class="card-title fw-normal">Khách Hàng</h5>
+                    <h2 class="fw-bold mb-0">{{ $stats['customer_users'] }}</h2>
                 </div>
             </div>
         </div>

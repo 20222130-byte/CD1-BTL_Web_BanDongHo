@@ -17,34 +17,38 @@
     {{-- Stats Cards --}}
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Tổng Sản Phẩm</h5>
-                    <h2>{{ $stats['total_products'] }}</h2>
+            <div class="card text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-box-seam fs-1 mb-2" style="opacity: 0.8;"></i>
+                    <h5 class="card-title fw-normal">Tổng Sản Phẩm</h5>
+                    <h2 class="fw-bold mb-0">{{ $stats['total_products'] }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Tổng Kho</h5>
-                    <h2>{{ number_format($stats['total_stock']) }}</h2>
+            <div class="card text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-layers fs-1 mb-2" style="opacity: 0.8;"></i>
+                    <h5 class="card-title fw-normal">Tổng Kho</h5>
+                    <h2 class="fw-bold mb-0">{{ number_format($stats['total_stock']) }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Giá TB</h5>
-                    <h2>{{ number_format($stats['avg_price']) }} ₫</h2>
+            <div class="card text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-tags fs-1 mb-2" style="opacity: 0.8;"></i>
+                    <h5 class="card-title fw-normal">Giá TB</h5>
+                    <h2 class="fw-bold mb-0">{{ number_format($stats['avg_price']) }} ₫</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-danger text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Hết Hàng</h5>
-                    <h2>{{ $stats['low_stock'] }}</h2>
+            <div class="card text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-exclamation-triangle fs-1 mb-2" style="opacity: 0.8;"></i>
+                    <h5 class="card-title fw-normal">Hết Hàng</h5>
+                    <h2 class="fw-bold mb-0">{{ $stats['low_stock'] }}</h2>
                 </div>
             </div>
         </div>
@@ -76,8 +80,17 @@
                     <select name="category" class="form-select">
                         <option value="">Tất cả danh mục</option>
                         @if(isset($categories))
-                            @foreach($categories as $category)
-                                <option value="{{ $category->category_id }}" {{ request('category') == $category->category_id ? 'selected' : '' }}>{{ $category->category_name }}</option>
+                            @php
+                                $groupedCats = collect($categories)->groupBy('description');
+                            @endphp
+                            @foreach($groupedCats as $group => $cats)
+                                <optgroup label="{{ $group ?: 'Khác' }}">
+                                    @foreach($cats as $category)
+                                        <option value="{{ $category->category_id }}" {{ request('category') == $category->category_id ? 'selected' : '' }}>
+                                            {{ $category->category_name }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
                             @endforeach
                         @endif
                     </select>

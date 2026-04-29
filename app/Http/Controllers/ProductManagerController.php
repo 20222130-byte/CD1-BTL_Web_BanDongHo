@@ -47,7 +47,8 @@ class ProductManagerController extends Controller
             return redirect('/product-manager')->with('error', 'S?n ph?m kh�ng t?n t?i');
         }
 
-        return view('product-edit', compact('product'));
+        $categories = Category::getAllCategories();
+        return view('product-edit', compact('product', 'categories'));
     }
 
     public function create()
@@ -56,13 +57,14 @@ class ProductManagerController extends Controller
             return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
         }
 
-        return view('product-create');
+        $categories = Category::getAllCategories();
+        return view('product-create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập');
         }
 
         $validated = $request->validate([
@@ -70,27 +72,34 @@ class ProductManagerController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image_url' => 'nullable|url',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'nullable|integer',
         ]);
 
+        if ($request->hasFile('image')) {
+            $imageName = time().'.'.$request->image->extension();  
+            $request->image->move(public_path('images'), $imageName);
+            $validated['image_url'] = '/images/'.$imageName;
+        }
+        unset($validated['image']);
+
         try {
             $productId = Product::createProduct($validated);
-            return redirect('/product-manager')->with('success', 'Th�m s?n ph?m th�nh c�ng! ID: ' . $productId);
+            return redirect('/product-manager')->with('success', 'Thêm sản phẩm thành công! ID: ' . $productId);
         } catch (\Throwable $e) {
-            return redirect('/product-create')->with('error', 'L?i khi th�m s?n ph?m: ' . $e->getMessage());
+            return redirect('/product-create')->with('error', 'Lỗi khi thêm sản phẩm: ' . $e->getMessage());
         }
     }
 
     public function update(Request $request, $id)
     {
         if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập');
         }
 
         $product = Product::getProductById($id);
         if (!$product) {
-            return redirect('/product-manager')->with('error', 'S?n ph?m kh�ng t?n t?i');
+            return redirect('/product-manager')->with('error', 'Sản phẩm không tồn tại');
         }
 
         $validated = $request->validate([
@@ -98,34 +107,41 @@ class ProductManagerController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image_url' => 'nullable|url',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'nullable|integer',
         ]);
 
+        if ($request->hasFile('image')) {
+            $imageName = time().'.'.$request->image->extension();  
+            $request->image->move(public_path('images'), $imageName);
+            $validated['image_url'] = '/images/'.$imageName;
+        }
+        unset($validated['image']);
+
         try {
             Product::updateProduct($id, $validated);
-            return redirect('/product-manager')->with('success', 'C?p nh?t s?n ph?m th�nh c�ng!');
+            return redirect('/product-manager')->with('success', 'Cập nhật sản phẩm thành công!');
         } catch (\Throwable $e) {
-            return redirect('/product-edit/' . $id)->with('error', 'L?i khi c?p nh?t s?n ph?m: ' . $e->getMessage());
+            return redirect('/product-edit/' . $id)->with('error', 'Lỗi khi cập nhật sản phẩm: ' . $e->getMessage());
         }
     }
 
     public function delete($id)
     {
         if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
+            return redirect('/')->with('error', 'Bạn không có quyênn truy cập');
         }
 
         $product = Product::getProductById($id);
         if (!$product) {
-            return redirect('/product-manager')->with('error', 'S?n ph?m kh�ng t?n t?i');
+            return redirect('/product-manager')->with('error', 'Sản phẩm không tồn tại');
         }
 
         try {
             Product::deleteProduct($id);
-            return redirect('/product-manager')->with('success', 'X�a s?n ph?m th�nh c�ng!');
+            return redirect('/product-manager')->with('success', 'Xóa sản phẩm thành công!');
         } catch (\Throwable $e) {
-            return redirect('/product-manager')->with('error', 'L?i khi x�a s?n ph?m: ' . $e->getMessage());
+            return redirect('/product-manager')->with('error', 'Lỗi khi xóa sản phẩm: ' . $e->getMessage());
         }
     }
 
@@ -133,17 +149,18 @@ class ProductManagerController extends Controller
     public function categoryIndex()
     {
         if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập');
         }
 
         $categories = Category::getAllCategories();
-        return view('category-manager', compact('categories'));
+        $groups = collect($categories)->pluck('description')->unique()->filter()->values();
+        return view('category-manager', compact('categories', 'groups'));
     }
 
     public function categoryStore(Request $request)
     {
         if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập');
         }
 
         $validated = $request->validate([
@@ -153,35 +170,37 @@ class ProductManagerController extends Controller
 
         try {
             $categoryId = Category::createCategory($validated);
-            return redirect('/category-manager')->with('success', 'Th�m danh m?c th�nh c�ng! ID: ' . $categoryId);
+            return redirect('/category-manager')->with('success', 'Thêm danh mục thành công! ID: ' . $categoryId);
         } catch (\Throwable $e) {
-            return redirect('/category-manager')->with('error', 'L?i khi th�m danh m?c: ' . $e->getMessage());
+            return redirect('/category-manager')->with('error', 'Lỗi khi thêm danh mục: ' . $e->getMessage());
         }
     }
 
     public function categoryEdit($id)
     {
         if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập');
         }
 
         $category = Category::getCategoryById($id);
         if (!$category) {
-            return redirect('/category-manager')->with('error', 'Danh m?c kh�ng t?n t?i');
+            return redirect('/category-manager')->with('error', 'Danh mục không tồn tại');
         }
 
-        return view('category-edit', compact('category'));
+        $categories = Category::getAllCategories();
+        $groups = collect($categories)->pluck('description')->unique()->filter()->values();
+
+        return view('category-edit', compact('category', 'groups'));
     }
 
     public function categoryUpdate(Request $request, $id)
     {
         if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
         }
 
         $category = Category::getCategoryById($id);
         if (!$category) {
-            return redirect('/category-manager')->with('error', 'Danh m?c kh�ng t?n t?i');
+            return redirect('/category-manager')->with('error', 'Danh mục không tồn tại');
         }
 
         $validated = $request->validate([
@@ -191,23 +210,23 @@ class ProductManagerController extends Controller
 
         try {
             Category::updateCategory($id, $validated);
-            return redirect('/category-manager')->with('success', 'C?p nh?t danh m?c th�nh c�ng!');
+            return redirect('/category-manager')->with('success', 'Cập nhật danh mục thành công!');
         } catch (\Throwable $e) {
-            return redirect('/category-edit/' . $id)->with('error', 'L?i khi c?p nh?t danh m?c: ' . $e->getMessage());
+            return redirect('/category-edit/' . $id)->with('error', 'Lỗi khi cập nhật danh mục: ' . $e->getMessage());
         }
     }
 
     public function categoryDelete($id)
     {
         if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'B?n kh�ng c� quy?n truy c?p');
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập');
         }
 
         try {
             Category::deleteCategory($id);
-            return redirect('/category-manager')->with('success', 'X�a danh m?c th�nh c�ng!');
+            return redirect('/category-manager')->with('success', 'Xóa danh mục thành công!');
         } catch (\Throwable $e) {
-            return redirect('/category-manager')->with('error', 'L?i khi x�a danh m?c: ' . $e->getMessage());
+            return redirect('/category-manager')->with('error', 'Lỗi khi xóa danh mục: ' . $e->getMessage());
         }
     }
 }

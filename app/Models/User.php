@@ -4,53 +4,48 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
 
-class Report
+class User
 {
-    public static function getSummary()
+    public static function getAllUsers()
+    {
+        return DB::table('users')->orderByDesc('created_at')->get();
+    }
+
+    public static function getUserStats()
     {
         return [
             'total_users' => DB::table('users')->count(),
-            'total_products' => DB::table('products')->count(),
-            'total_orders' => DB::table('orders')->count(),
-            'total_revenue' => DB::table('orders')->sum('total_amount') ?? 0,
-            'total_payments' => DB::table('payments')->count(),
+            'admin_users' => DB::table('users')->where('role', 'admin')->count(),
+            'customer_users' => DB::table('users')->where('role', 'customer')->count(),
+            'new_users_today' => DB::table('users')->whereDate('created_at', today())->count(),
         ];
     }
 
-    public static function getOrderStatuses()
+    public static function getUserById($id)
     {
-        return DB::table('orders')
-            ->select('status', DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->get();
+        return DB::table('users')->where('user_id', $id)->first();
     }
 
-    public static function getPaymentStatuses()
+    public static function createUser($data)
     {
-        return DB::table('payments')
-            ->select('payment_status', DB::raw('count(*) as count'))
-            ->groupBy('payment_status')
-            ->get();
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        $data['created_at'] = now();
+        return DB::table('users')->insertGetId($data);
     }
 
-    public static function getTopProducts()
+    public static function updateUser($id, $data)
     {
-        return DB::table('order_details')
-            ->join('products', 'order_details.product_id', '=', 'products.product_id')
-            ->select('products.product_name', DB::raw('SUM(order_details.quantity) as sold_quantity'))
-            ->groupBy('products.product_name')
-            ->orderByDesc('sold_quantity')
-            ->limit(5)
-            ->get();
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        } else {
+            unset($data['password']);
+        }
+        
+        return DB::table('users')->where('user_id', $id)->update($data);
     }
 
-    public static function getRecentOrders()
+    public static function deleteUser($id)
     {
-        return DB::table('orders')
-            ->leftJoin('users', 'orders.user_id', '=', 'users.user_id')
-            ->select('orders.order_id', 'orders.order_date', 'orders.total_amount', 'orders.status', 'users.full_name', 'users.username')
-            ->orderByDesc('orders.order_date')
-            ->limit(5)
-            ->get();
+        return DB::table('users')->where('user_id', $id)->delete();
     }
 }
