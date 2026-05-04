@@ -57,19 +57,27 @@
 <div class="row">
     @forelse ($products as $product)
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm hover-card" style="transition: transform 0.3s;">
-                @if($product->image_url)
-                    <img src="{{ Str::startsWith($product->image_url, 'http') ? $product->image_url : asset($product->image_url) }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 250px; object-fit: cover;">
-                @else
-                    <img src="https://via.placeholder.com/400x300?text={{ urlencode($product->product_name) }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 250px; object-fit: cover;">
-                @endif
-                <div class="card-body">
-                    <h5 class="card-title text-primary fw-bold">{{ $product->product_name }}</h5>
-                    <p class="card-text text-muted">{{ $product->description ?? 'Chất lượng premium, bảo hành 2 năm' }}</p>
-                    <p class="card-text text-danger"><strong>Giá: {{ number_format($product->price, 0, ',', '.') }} VNĐ</strong></p>
-                    <a href="/product/{{ $product->product_id }}" class="btn btn-primary w-100">
-                        <i class="bi bi-eye"></i> Xem Chi Tiết
-                    </a>
+            <div class="card h-100 shadow-sm hover-card border-0 rounded-4 overflow-hidden" style="transition: all 0.3s ease;">
+                <div class="position-relative">
+                    @if($product->image_url)
+                        <img src="{{ Str::startsWith($product->image_url, 'http') ? $product->image_url : asset($product->image_url) }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 280px; object-fit: cover;">
+                    @else
+                        <img src="https://via.placeholder.com/400x300?text={{ urlencode($product->product_name) }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 280px; object-fit: cover;">
+                    @endif
+                    <div class="position-absolute top-0 end-0 p-2">
+                        <span class="badge bg-primary rounded-pill px-3 shadow-sm">Mới</span>
+                    </div>
+                </div>
+                <div class="card-body d-flex flex-column p-4">
+                    <h5 class="card-title text-dark fw-bold mb-1 text-truncate">{{ $product->product_name }}</h5>
+                    <p class="text-muted small mb-3">Mã SP: #{{ $product->product_id }}</p>
+                    
+                    <div class="mt-auto">
+                        <p class="card-text text-danger h5 fw-bold mb-3">{{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
+                        <a href="/product/{{ $product->product_id }}" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm">
+                            <i class="bi bi-eye me-1"></i> Xem Chi Tiết
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
