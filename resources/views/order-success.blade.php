@@ -51,9 +51,10 @@
                         <a href="/" class="btn btn-primary btn-lg">
                             <i class="bi bi-shop"></i> Tiếp Tục Mua Sắm
                         </a>
-                        <a href="/dashboard" class="btn btn-outline-secondary btn-lg">
-                            <i class="bi bi-speedometer2"></i> Xem Đơn Hàng Của Bạn
+                        <a href="/order-detail/{{ $order_id }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-receipt"></i> Xem Chi Tiết Đơn Hàng
                         </a>
+
                     </div>
                 </div>
             </div>

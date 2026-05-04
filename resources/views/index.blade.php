@@ -60,7 +60,18 @@
             <div class="card h-100 shadow-sm hover-card border-0 rounded-4 overflow-hidden" style="transition: all 0.3s ease;">
                 <div class="position-relative">
                     @if($product->image_url)
-                        <img src="{{ Str::startsWith($product->image_url, 'http') ? $product->image_url : asset($product->image_url) }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 280px; object-fit: cover;">
+                        @php
+                            $imageUrl = $product->image_url;
+                            if ($imageUrl && !\Illuminate\Support\Str::startsWith($imageUrl, 'http')) {
+                                if (!\Illuminate\Support\Str::startsWith($imageUrl, 'images/') && !\Illuminate\Support\Str::startsWith($imageUrl, '/images/')) {
+                                    $imageUrl = 'images/' . ltrim($imageUrl, '/');
+                                }
+                                $src = asset($imageUrl);
+                            } else {
+                                $src = $imageUrl;
+                            }
+                        @endphp
+                        <img src="{{ $src }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 280px; object-fit: cover;">
                     @else
                         <img src="https://via.placeholder.com/400x300?text={{ urlencode($product->product_name) }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 280px; object-fit: cover;">
                     @endif

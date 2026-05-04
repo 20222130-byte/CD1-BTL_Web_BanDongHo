@@ -26,6 +26,8 @@ Route::get('/orders', [OrderController::class, 'listOrders']);
 Route::get('/order-manage', [OrderController::class, 'listOrders']);
 Route::get('/my-orders', [OrderController::class, 'myOrders']);
 Route::post('/order-update-status/{id}', [OrderController::class, 'updateStatus']);
+Route::get('/order-detail/{id}', [OrderController::class, 'showOrderDetail']);
+Route::get('/order-admin-detail/{id}', [OrderController::class, 'showAdminOrderDetail']);
 
 // Wishlist Route
 Route::get('/wishlist', function () {

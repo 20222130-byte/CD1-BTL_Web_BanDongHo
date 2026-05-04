@@ -36,7 +36,7 @@
 
             <div class="mt-4">
                 <a href="/" class="btn btn-link text-decoration-none p-0 fw-bold">
-                    <i class="bi bi-arrow-left me-2"></i> Tiếp tục mua sắm
+                    <i class="bi bi-arrow-left me-2"></i> Tiếp Tục Mua Sắm
                 </a>
             </div>
         </div>
@@ -149,7 +149,7 @@
                     <i class="bi bi-cart-x text-muted" style="font-size: 5rem;"></i>
                     <h4 class="mt-4 fw-bold">Giỏ hàng của bạn trống</h4>
                     <p class="text-muted">Hãy thêm sản phẩm vào giỏ hàng để bắt đầu mua sắm.</p>
-                    <a href="/" class="btn btn-primary mt-3 px-5 py-2 rounded-pill fw-bold">Mua sắm ngay</a>
+                    <a href="/" class="btn btn-primary mt-3 px-5 py-2 rounded-pill fw-bold">Tiếp Tục Mua Sắm</a>
                 </div>
             `;
             updateTotal(0);
@@ -167,9 +167,18 @@
             const itemTotal = price * quantity;
             subtotal += itemTotal;
 
-            const imageUrl = item.image 
-                ? (item.image.startsWith('http') ? item.image : (window.appConfig.assetUrl + (item.image.startsWith('/') ? item.image.substring(1) : item.image)))
-                : `https://via.placeholder.com/150x150?text=${encodeURIComponent(name)}`;
+            let imageUrl = item.image || '';
+            if (imageUrl && !imageUrl.startsWith('http')) {
+                // Ensure it has images/ prefix
+                if (!imageUrl.startsWith('images/') && !imageUrl.startsWith('/images/')) {
+                    imageUrl = 'images/' + (imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl);
+                }
+                // Ensure it has leading slash for assetUrl concatenation or use absolute path
+                if (!imageUrl.startsWith('/')) imageUrl = '/' + imageUrl;
+                imageUrl = window.appConfig.baseUrl + imageUrl;
+            } else if (!imageUrl) {
+                imageUrl = `https://via.placeholder.com/150x150?text=${encodeURIComponent(name)}`;
+            }
 
             html += `
                 <div class="card border-0 shadow-sm rounded-4 mb-3 cart-item-card overflow-hidden">

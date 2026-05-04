@@ -24,12 +24,18 @@ class Order
             foreach ($cart as $item) {
                 $productId = intval($item['id']);
                 $quantity = max(1, intval($item['quantity'] ?? 1));
-                $price = 1000000 + (($productId * 35791) % 4000000);
+                
+                // Lấy giá thực tế từ database thay vì dùng công thức hardcoded
+                $product = DB::table('products')->where('product_id', $productId)->first();
+                $price = $product ? $product->price : (1000000 + (($productId * 35791) % 4000000));
+                
                 $subtotal += $price * $quantity;
 
-                self::ensureProductExists($productId, $price);
+                if (!$product) {
+                    self::ensureProductExists($productId, $price);
+                }
                 
-                // Trừ số lượng tồn kho (Số lượng đã được kiểm tra ở bước Thanh toán)
+                // Trừ số lượng tồn kho
                 DB::table('products')->where('product_id', $productId)->decrement('stock', $quantity);
 
                 DB::table('order_details')->insert([

@@ -142,7 +142,7 @@
         let subtotal = 0;
 
         cart.forEach(item => {
-            const price = Math.floor(Math.random() * (5000000 - 1000000 + 1)) + 1000000;
+            const price = parseInt(item.price) || (1000000 + ((item.id * 35791) % 4000000));
             const itemTotal = price * item.quantity;
             subtotal += itemTotal;
 

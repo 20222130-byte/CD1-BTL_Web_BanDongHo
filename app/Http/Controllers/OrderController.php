@@ -104,7 +104,7 @@ class OrderController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => 'required|in:pending,processing,shipped,delivered,cancelled'
+            'status' => 'required|in:pending,confirmed,processing,delivery,delivered,cancelled'
         ]);
 
         try {
@@ -121,5 +121,36 @@ class OrderController extends Controller
             }
             return back()->with('error', 'Lỗi khi cập nhật trạng thái: ' . $e->getMessage());
         }
+    }
+
+    public function showOrderDetail($id)
+    {
+        if (!session('logged_in')) {
+            return redirect('/login');
+        }
+
+        $order = \Illuminate\Support\Facades\DB::table('orders')->where('order_id', $id)->first();
+        if (!$order || $order->user_id != session('user_id')) {
+            return redirect('/my-orders')->with('error', 'Không tìm thấy đơn hàng hoặc bạn không có quyền xem.');
+        }
+
+        $orderDetails = Order::getOrderDetails($id);
+        return view('order-detail', compact('order', 'orderDetails'));
+    }
+
+    public function showAdminOrderDetail($id)
+    {
+        if (!session('logged_in') || session('role') !== 'admin') {
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập');
+        }
+
+        $order = \Illuminate\Support\Facades\DB::table('orders')->where('order_id', $id)->first();
+        if (!$order) {
+            return redirect('/order-manage')->with('error', 'Không tìm thấy đơn hàng.');
+        }
+
+        $user = \Illuminate\Support\Facades\DB::table('users')->where('user_id', $order->user_id)->first();
+        $orderDetails = Order::getOrderDetails($id);
+        return view('order-admin-detail', compact('order', 'orderDetails', 'user'));
     }
 }

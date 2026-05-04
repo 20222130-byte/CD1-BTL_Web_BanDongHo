@@ -10,7 +10,7 @@
             <p class="text-muted">Xem lịch sử và trạng thái các đơn hàng bạn đã đặt.</p>
         </div>
         <a href="/" class="btn btn-outline-primary btn-sm rounded-pill px-4">
-            Tiếp tục mua sắm
+            Tiếp Tục Mua Sắm
         </a>
     </div>
 
@@ -36,23 +36,25 @@
                                     @php
                                         $statusClass = match($order->status) {
                                             'pending' => 'bg-warning text-dark',
+                                            'confirmed' => 'bg-info text-white',
                                             'processing' => 'bg-info text-white',
-                                            'shipped' => 'bg-primary text-white',
+                                            'delivery' => 'bg-primary text-white',
                                             'delivered' => 'bg-success text-white',
                                             'cancelled' => 'bg-danger text-white',
                                             default => 'bg-secondary text-white'
                                         };
-                                        $statusName = match($order->status) {
-                                            'pending' => 'Đang chờ xử lý',
+                                        $statusText = match($order->status) {
+                                            'pending' => 'Chờ xác nhận',
+                                            'confirmed' => 'Đã xác nhận',
                                             'processing' => 'Đang xử lý',
-                                            'shipped' => 'Đang giao hàng',
-                                            'delivered' => 'Đã giao hàng',
+                                            'delivery' => 'Đang giao',
+                                            'delivered' => 'Đã giao',
                                             'cancelled' => 'Đã hủy',
                                             default => $order->status
                                         };
                                     @endphp
                                     <span class="badge {{ $statusClass }} rounded-pill px-3 py-2">
-                                        {{ $statusName }}
+                                        {{ $statusText }}
                                     </span>
                                 </div>
                             </div>
@@ -75,9 +77,9 @@
                         </div>
                         <div class="card-footer bg-light border-0 px-4 py-3">
                             <div class="d-flex justify-content-end">
-                                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled>
-                                    Xem chi tiết (Sắp ra mắt)
-                                </button>
+                                <a href="/order-detail/{{ $order->order_id }}" class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                                    <i class="bi bi-eye"></i> Chi Tiết
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -90,7 +92,7 @@
                 <i class="bi bi-cart-x text-muted" style="font-size: 5rem;"></i>
                 <h4 class="mt-4 fw-bold">Bạn chưa có đơn hàng nào</h4>
                 <p class="text-muted">Hãy bắt đầu mua sắm để nhận được những ưu đãi tốt nhất.</p>
-                <a href="/" class="btn btn-primary mt-3 px-5 py-2 rounded-pill">Mua sắm ngay</a>
+                <a href="/" class="btn btn-primary mt-3 px-5 py-2 rounded-pill">Tiếp Tục Mua Sắm</a>
             </div>
         </div>
     @endif

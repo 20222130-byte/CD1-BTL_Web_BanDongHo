@@ -145,7 +145,7 @@
                     </div>
 
                     <!-- Cập nhật trạng thái -->
-                    <form action="/order-manage/update-status/{{ $order->order_id }}" method="POST">
+                    <form action="/order-update-status/{{ $order->order_id }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label for="status" class="form-label"><strong>Cập Nhật Trạng Thái</strong></label>

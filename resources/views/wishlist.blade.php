@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1><i class="bi bi-heart-fill text-danger"></i> Danh Sách Yêu Thích</h1>
         <a href="/" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Quay Lại
+            <i class="bi bi-shop"></i> Tiếp Tục Mua Sắm
         </a>
     </div>
 

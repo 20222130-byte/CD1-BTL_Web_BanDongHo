@@ -39,6 +39,45 @@
         font-size: 1.1rem;
         padding: 8px 16px;
     }
+
+    /* Tối ưu hóa cho in ấn (PDF chuyên nghiệp) */
+    @media print {
+        body {
+            background-color: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .navbar, footer, .btn, .d-flex.gap-2, .report-header a {
+            display: none !important; /* Ẩn các thành phần điều hướng */
+        }
+        .report-header {
+            background: #667eea !important;
+            -webkit-print-color-adjust: exact;
+            color: white !important;
+            border-radius: 0;
+            margin-bottom: 20px;
+        }
+        .card {
+            border: 1px solid #eee !important;
+            box-shadow: none !important;
+            break-inside: avoid; /* Tránh ngắt trang giữa chừng card */
+        }
+        .metric-card {
+            border-left: 4px solid !important;
+            -webkit-print-color-adjust: exact;
+        }
+        .metric-value {
+            font-size: 2rem !important;
+        }
+        .chart-container {
+            height: 250px !important;
+        }
+        .container {
+            width: 100% !important;
+            max-width: none !important;
+            padding: 0 !important;
+        }
+    }
 </style>
 
 <div class="report-header">
@@ -47,7 +86,13 @@
             <h2 class="mb-2"><i class="bi bi-file-earmark-bar-graph"></i> Báo Cáo Thống Kê Kinh Doanh</h2>
             <p class="mb-0">Tổng hợp dữ liệu hệ thống | Cập nhật lúc: <strong>{{ \Carbon\Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i') }}</strong></p>
         </div>
-        <div>
+        <div class="d-flex gap-2">
+            <button onclick="exportCSV()" class="btn btn-success">
+                <i class="bi bi-file-earmark-excel"></i> Xuất file Excel
+            </button>
+            <button onclick="exportToPDF()" class="btn btn-danger">
+                <i class="bi bi-file-pdf"></i> Xuất file PDF
+            </button>
             <a href="/dashboard" class="btn btn-light">
                 <i class="bi bi-arrow-left"></i> Quay lại
             </a>
@@ -281,6 +326,47 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    function exportCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Add BOM for Excel UTF-8
+        
+        // 1. Summary Section
+        csvContent += "BAO CAO THONG KE KINH DOANH\n";
+        csvContent += "Ngay xuat: " + "{{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}\n\n";
+        
+        csvContent += "Metric,Gia tri\n";
+        csvContent += "Tong nguoi dung," + "{{ $summary['total_users'] }}\n";
+        csvContent += "Tong san pham," + "{{ $summary['total_products'] }}\n";
+        csvContent += "Tong don hang," + "{{ $summary['total_orders'] }}\n";
+        csvContent += "Tong doanh thu," + "{{ $summary['total_revenue'] }}\n\n";
+        
+        // 2. Top Products
+        csvContent += "TOP 5 SAN PHAM BAN CHAY\n";
+        csvContent += "San pham,So luong ban\n";
+        @foreach($topProducts as $product)
+            csvContent += "{{ $product->product_name }},{{ $product->sold_quantity }}\n";
+        @endforeach
+        csvContent += "\n";
+        
+        // 3. Recent Orders
+        csvContent += "5 DON HANG GAN NHAT\n";
+        csvContent += "Ma don,Khach hang,Ngay dat,Tong tien\n";
+        @foreach($recentOrders as $order)
+            csvContent += "#{{ $order->order_id }},{{ $order->full_name ?? $order->username }},{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }},{{ $order->total_amount }}\n";
+        @endforeach
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Thong-Ke-Kinh-Doanh-{{ \Carbon\Carbon::now()->format('d-m-Y') }}.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function exportToPDF() {
+        window.print();
+    }
+
     // Order Status Chart
     const orderCtx = document.getElementById('orderStatusChart');
     if (orderCtx) {

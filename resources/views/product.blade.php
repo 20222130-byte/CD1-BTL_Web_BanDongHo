@@ -19,7 +19,18 @@
                     <div class="row g-0">
                         <div class="col-md-6 bg-light d-flex align-items-center justify-content-center p-3">
                             @if($product->image_url)
-                                <img src="{{ Str::startsWith($product->image_url, 'http') ? $product->image_url : asset($product->image_url) }}" class="img-fluid rounded-4 shadow-sm" style="max-height: 500px; object-fit: contain;">
+                                @php
+                                    $imageUrl = $product->image_url;
+                                    if ($imageUrl && !\Illuminate\Support\Str::startsWith($imageUrl, 'http')) {
+                                        if (!\Illuminate\Support\Str::startsWith($imageUrl, 'images/') && !\Illuminate\Support\Str::startsWith($imageUrl, '/images/')) {
+                                            $imageUrl = 'images/' . ltrim($imageUrl, '/');
+                                        }
+                                        $src = asset($imageUrl);
+                                    } else {
+                                        $src = $imageUrl;
+                                    }
+                                @endphp
+                                <img src="{{ $src }}" class="img-fluid rounded-4 shadow-sm" style="max-height: 500px; object-fit: contain;">
                             @else
                                 <img src="https://via.placeholder.com/600x600?text={{ urlencode($product->product_name) }}" class="img-fluid rounded-4 shadow-sm">
                             @endif
@@ -89,7 +100,18 @@
                             <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-card" style="transition: all 0.3s ease;">
                                 <div class="position-relative">
                                     @if($related->image_url)
-                                        <img src="{{ Str::startsWith($related->image_url, 'http') ? $related->image_url : asset($related->image_url) }}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                                        @php
+                                            $relImageUrl = $related->image_url;
+                                            if ($relImageUrl && !\Illuminate\Support\Str::startsWith($relImageUrl, 'http')) {
+                                                if (!\Illuminate\Support\Str::startsWith($relImageUrl, 'images/') && !\Illuminate\Support\Str::startsWith($relImageUrl, '/images/')) {
+                                                    $relImageUrl = 'images/' . ltrim($relImageUrl, '/');
+                                                }
+                                                $relSrc = asset($relImageUrl);
+                                            } else {
+                                                $relSrc = $relImageUrl;
+                                            }
+                                        @endphp
+                                        <img src="{{ $relSrc }}" class="card-img-top" style="height: 250px; object-fit: cover;">
                                     @else
                                         <img src="https://via.placeholder.com/400x400?text={{ urlencode($related->product_name) }}" class="card-img-top" style="height: 250px; object-fit: cover;">
                                     @endif

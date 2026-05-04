@@ -15,7 +15,7 @@
                 <i class="bi bi-person-circle"></i> Hồ Sơ
             </a>
             <a href="/" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Quay lại
+                <i class="bi bi-shop"></i> Tiếp Tục Mua Sắm
             </a>
         </div>
     </div>
@@ -73,20 +73,20 @@
                                                 default => 'secondary'
                                             };
                                             $statusText = match($order->status) {
-                                                'pending' => 'Chờ Xác Nhận',
-                                                'confirmed' => 'Đã Xác Nhận',
-                                                'processing' => 'Đang Xử Lý',
-                                                'delivery' => 'Đang Giao',
-                                                'delivered' => 'Đã Giao',
-                                                'cancelled' => 'Đã Hủy',
-                                                default => ucfirst($order->status)
+                                                'pending' => 'Chờ xác nhận',
+                                                'confirmed' => 'Đã xác nhận',
+                                                'processing' => 'Đang xử lý',
+                                                'delivery' => 'Đang giao',
+                                                'delivered' => 'Đã giao',
+                                                'cancelled' => 'Đã hủy',
+                                                default => $order->status
                                             };
                                         @endphp
                                         <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
                                     </td>
                                     <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</td>
                                     <td>
-                                        <a href="/order-detail/{{ $order->order_id }}" class="btn btn-sm btn-outline-primary">
+                                        <a href="/order-detail/{{ $order->order_id }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
                                             <i class="bi bi-eye"></i> Chi Tiết
                                         </a>
                                     </td>

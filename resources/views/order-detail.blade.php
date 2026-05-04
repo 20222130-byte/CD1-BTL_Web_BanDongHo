@@ -38,13 +38,13 @@
                                     default => 'secondary'
                                 };
                                 $statusText = match($order->status) {
-                                    'pending' => 'Chờ Xác Nhận',
-                                    'confirmed' => 'Đã Xác Nhận',
-                                    'processing' => 'Đang Xử Lý',
-                                    'delivery' => 'Đang Giao',
-                                    'delivered' => 'Đã Giao',
-                                    'cancelled' => 'Đã Hủy',
-                                    default => ucfirst($order->status)
+                                    'pending' => 'Chờ xác nhận',
+                                    'confirmed' => 'Đã xác nhận',
+                                    'processing' => 'Đang xử lý',
+                                    'delivery' => 'Đang giao',
+                                    'delivered' => 'Đã giao',
+                                    'cancelled' => 'Đã hủy',
+                                    default => $order->status
                                 };
                             @endphp
                             <p><strong>Trạng Thái:</strong> <span class="badge bg-{{ $statusClass }} p-2">{{ $statusText }}</span></p>
