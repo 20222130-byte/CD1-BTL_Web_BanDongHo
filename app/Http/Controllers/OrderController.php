@@ -66,6 +66,7 @@ class OrderController extends Controller
         }
         return view('order-success', ['order_id' => request()->query('order_id')]);
     }
+<<<<<<< HEAD
 
     public function listOrders()
     {
@@ -112,4 +113,6 @@ class OrderController extends Controller
             return back()->with('error', 'Lỗi khi cập nhật trạng thái: ' . $e->getMessage());
         }
     }
+=======
+>>>>>>> a1863cdf6d77a08bf48a952dd39765b3b3355e29
 }

@@ -119,6 +119,7 @@
                     </a>
                 </li>
                 @if (session('logged_in'))
+<<<<<<< HEAD
                     <li class="nav-item dropdown me-2">
                         <a class="nav-link dropdown-toggle text-white d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle fs-5"></i>
@@ -136,6 +137,40 @@
                             @endif
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item py-2 text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
+=======
+                    <li class="nav-item me-2 dropdown">
+                        <a class="btn btn-outline-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ session('full_name') }}
+                            @if (session('role') === 'admin')
+                                <span class="badge bg-warning ms-1">Admin</span>
+                            @endif
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="/profile">
+                                    <i class="bi bi-person"></i> Hồ Sơ Cá Nhân
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/my-orders">
+                                    <i class="bi bi-bag-check"></i> Đơn Hàng Của Tôi
+                                </a>
+                            </li>
+                            @if (session('role') === 'admin')
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="/dashboard">
+                                        <i class="bi bi-speedometer2"></i> Dashboard
+                                    </a>
+                                </li>
+                            @endif
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="/logout">
+                                    <i class="bi bi-box-arrow-right"></i> Đăng Xuất
+                                </a>
+                            </li>
+>>>>>>> a1863cdf6d77a08bf48a952dd39765b3b3355e29
                         </ul>
                     </li>
                 @else
