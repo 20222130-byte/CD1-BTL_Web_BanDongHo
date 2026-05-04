@@ -37,7 +37,18 @@
                                     <td>{{ $order->full_name ?? 'Khách' }}</td>
                                     <td>{{ $order->email ?? '-' }}</td>
                                     <td>{{ number_format($order->total_amount, 0, ',', '.') }} ₫</td>
-                                    <td class="text-capitalize"><span class="badge bg-info">{{ $order->status }}</span></td>
+                                    <td>
+                                        <form action="/order-update-status/{{ $order->order_id }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <select name="status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
+                                                <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Đang xử lý</option>
+                                                <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Đang giao</option>
+                                                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Đã giao</option>
+                                                <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                            </select>
+                                        </form>
+                                    </td>
                                     <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</td>
                                 </tr>
                             @endforeach

@@ -76,4 +76,40 @@ class OrderController extends Controller
         $orders = Order::getOrdersWithUser();
         return view('orders', compact('orders'));
     }
+
+    public function myOrders()
+    {
+        if (!session('logged_in')) {
+            return redirect('/login?next=/my-orders')->with('error', 'Vui lòng đăng nhập để xem đơn hàng');
+        }
+
+        $orders = Order::getOrdersByUserId(session('user_id'));
+        return view('my-orders', compact('orders'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        if (!session('logged_in') || session('role') !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,processing,shipped,delivered,cancelled'
+        ]);
+
+        try {
+            Order::updateOrderStatus($id, $validated['status']);
+            
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thành công']);
+            }
+            
+            return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
+        } catch (\Throwable $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+            return back()->with('error', 'Lỗi khi cập nhật trạng thái: ' . $e->getMessage());
+        }
+    }
 }

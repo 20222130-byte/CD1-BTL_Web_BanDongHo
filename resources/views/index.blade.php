@@ -58,7 +58,11 @@
     @forelse ($products as $product)
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm hover-card" style="transition: transform 0.3s;">
-                <img src="{{ $product->image_url ?? 'https://via.placeholder.com/300x200?text=No+Image' }}" class="card-img-top" alt="{{ $product->product_name }}">
+                @if($product->image_url)
+                    <img src="{{ Str::startsWith($product->image_url, 'http') ? $product->image_url : asset($product->image_url) }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 250px; object-fit: cover;">
+                @else
+                    <img src="https://via.placeholder.com/400x300?text={{ urlencode($product->product_name) }}" class="card-img-top" alt="{{ $product->product_name }}" style="height: 250px; object-fit: cover;">
+                @endif
                 <div class="card-body">
                     <h5 class="card-title text-primary fw-bold">{{ $product->product_name }}</h5>
                     <p class="card-text text-muted">{{ $product->description ?? 'Chất lượng premium, bảo hành 2 năm' }}</p>

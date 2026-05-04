@@ -31,6 +31,26 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        return view('product', ['product_id' => $id]);
+        $product = Product::getProductById($id);
+        if (!$product) {
+            return redirect('/')->with('error', 'Sản phẩm không tồn tại');
+        }
+
+        $relatedProducts = DB::table('products')
+            ->where('category_id', $product->category_id)
+            ->where('product_id', '!=', $id)
+            ->limit(3)
+            ->get();
+
+        return view('product', compact('product', 'relatedProducts'));
+    }
+
+    public function apiShow($id)
+    {
+        $product = Product::getProductById($id);
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại'], 404);
+        }
+        return response()->json(['success' => true, 'product' => $product]);
     }
 }

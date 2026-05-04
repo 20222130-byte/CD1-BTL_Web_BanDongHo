@@ -68,8 +68,32 @@ class Order
     {
         return DB::table('orders')
             ->leftJoin('users', 'orders.user_id', '=', 'users.user_id')
-            ->select('orders.order_id', 'orders.order_date', 'orders.total_amount', 'orders.status', 'orders.shipping_address', 'users.full_name', 'users.email')
+            ->select('orders.*', 'users.full_name', 'users.email')
             ->orderByDesc('orders.order_date')
+            ->get();
+    }
+
+    public static function getOrdersByUserId($userId)
+    {
+        return DB::table('orders')
+            ->where('user_id', $userId)
+            ->orderByDesc('order_date')
+            ->get();
+    }
+
+    public static function updateOrderStatus($orderId, $status)
+    {
+        return DB::table('orders')
+            ->where('order_id', $orderId)
+            ->update(['status' => $status]);
+    }
+
+    public static function getOrderDetails($orderId)
+    {
+        return DB::table('order_details')
+            ->join('products', 'order_details.product_id', '=', 'products.product_id')
+            ->where('order_id', $orderId)
+            ->select('order_details.*', 'products.product_name', 'products.image_url')
             ->get();
     }
 }

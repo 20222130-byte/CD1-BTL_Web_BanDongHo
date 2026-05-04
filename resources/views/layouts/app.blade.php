@@ -88,6 +88,12 @@
             padding: 0.4em 0.6em;
         }
     </style>
+    <script>
+        window.appConfig = {
+            baseUrl: "{{ url('/') }}",
+            assetUrl: "{{ asset('') }}"
+        };
+    </script>
 </head>
 <body>
 
@@ -113,19 +119,24 @@
                     </a>
                 </li>
                 @if (session('logged_in'))
-                    <li class="nav-item me-3">
-                        <div class="user-info">
-                            <i class="bi bi-person-circle"></i>
-                            {{ session('full_name') }}
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle text-white d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-5"></i>
+                            <span>{{ session('full_name') }}</span>
                             @if (session('role') === 'admin')
-                                <span class="badge bg-warning">Admin</span>
+                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Admin</span>
                             @endif
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/logout" class="btn btn-outline-light">
-                            <i class="bi bi-box-arrow-right"></i> Đăng Xuất
                         </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="userDropdown" style="border-radius: 12px;">
+                            <li><a class="dropdown-item py-2" href="/profile"><i class="bi bi-person me-2"></i> Hồ sơ cá nhân</a></li>
+                            <li><a class="dropdown-item py-2" href="/my-orders"><i class="bi bi-bag me-2"></i> Đơn hàng của tôi</a></li>
+                            @if (session('role') === 'admin')
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard Admin</a></li>
+                            @endif
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
+                        </ul>
                     </li>
                 @else
                     <li class="nav-item me-2">

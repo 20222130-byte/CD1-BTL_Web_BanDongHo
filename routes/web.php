@@ -9,11 +9,13 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProductManagerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserManagerController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', [ProductController::class, 'index']);
 
 // Product Routes
 Route::get('/product/{id}', [ProductController::class, 'show']);
+Route::get('/api/product/{id}', [ProductController::class, 'apiShow']);
 
 // Order Routes
 Route::get('/cart', [OrderController::class, 'showCart']);
@@ -21,6 +23,8 @@ Route::get('/checkout', [OrderController::class, 'showCheckout']);
 Route::post('/process-payment', [OrderController::class, 'processPayment']);
 Route::get('/order-success', [OrderController::class, 'showOrderSuccess']);
 Route::get('/orders', [OrderController::class, 'listOrders']);
+Route::get('/my-orders', [OrderController::class, 'myOrders']);
+Route::post('/order-update-status/{id}', [OrderController::class, 'updateStatus']);
 
 // Wishlist Route
 Route::get('/wishlist', function () {
@@ -37,6 +41,10 @@ Route::post('/login', [LoginController::class, 'login']);
 
 // Logout
 Route::get('/logout', [LoginController::class, 'logout']);
+
+// Profile Routes
+Route::get('/profile', [ProfileController::class, 'index']);
+Route::post('/profile-update', [ProfileController::class, 'update']);
 
 // Dashboard (chỉ cho admin)
 Route::get('/dashboard', [DashboardController::class, 'index']);
