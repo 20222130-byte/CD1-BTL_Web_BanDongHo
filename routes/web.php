@@ -9,6 +9,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProductManagerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserManagerController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OrderManagementController;
 
 Route::get('/', [ProductController::class, 'index']);
 
@@ -20,7 +22,6 @@ Route::get('/cart', [OrderController::class, 'showCart']);
 Route::get('/checkout', [OrderController::class, 'showCheckout']);
 Route::post('/process-payment', [OrderController::class, 'processPayment']);
 Route::get('/order-success', [OrderController::class, 'showOrderSuccess']);
-Route::get('/orders', [OrderController::class, 'listOrders']);
 
 // Wishlist Route
 Route::get('/wishlist', function () {
@@ -38,11 +39,24 @@ Route::post('/login', [LoginController::class, 'login']);
 // Logout
 Route::get('/logout', [LoginController::class, 'logout']);
 
+// Profile Routes
+Route::get('/profile', [ProfileController::class, 'showProfile']);
+Route::post('/profile/update', [ProfileController::class, 'updateProfile']);
+
+// User Orders Routes
+Route::get('/my-orders', [ProfileController::class, 'myOrders']);
+Route::get('/order-detail/{id}', [ProfileController::class, 'orderDetail']);
+
 // Dashboard (chỉ cho admin)
 Route::get('/dashboard', [DashboardController::class, 'index']);
 
 // Báo cáo thống kê
 Route::get('/report', [ReportController::class, 'showReport']);
+
+// Order Management Routes (Admin)
+Route::get('/order-manage', [OrderManagementController::class, 'index']);
+Route::post('/order-manage/update-status/{id}', [OrderManagementController::class, 'updateStatus']);
+Route::get('/order-admin-detail/{id}', [OrderManagementController::class, 'show']);
 
 // Product Manager Routes (Admin)
 Route::get('/product-manager', [ProductManagerController::class, 'index']);

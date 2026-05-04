@@ -111,8 +111,8 @@
                                 <i class="bi bi-receipt" style="font-size: 3rem; color: #f6ad55;"></i>
                             </div>
                             <h5 class="card-title fw-bold">Quản Lý Đơn Hàng</h5>
-                            <p class="card-text text-muted small">Xem tất cả đơn hàng và trạng thái</p>
-                            <a href="/orders" class="btn btn-warning mt-3 w-100">Truy Cập</a>
+                            <p class="card-text text-muted small">Xem tất cả đơn hàng và cập nhật trạng thái</p>
+                            <a href="/order-manage" class="btn btn-warning mt-3 w-100">Truy Cập</a>
                         </div>
                     </div>
                 </div>

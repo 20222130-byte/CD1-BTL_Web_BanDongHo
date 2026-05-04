@@ -72,4 +72,51 @@ class Order
             ->orderByDesc('orders.order_date')
             ->get();
     }
+
+    public static function getUserOrders($userId)
+    {
+        return DB::table('orders')
+            ->where('user_id', $userId)
+            ->leftJoin('order_details', 'orders.order_id', '=', 'order_details.order_id')
+            ->select(
+                'orders.order_id', 
+                'orders.order_date', 
+                'orders.total_amount', 
+                'orders.status', 
+                'orders.shipping_address',
+                DB::raw('COUNT(order_details.order_id) as item_count')
+            )
+            ->groupBy('orders.order_id', 'orders.order_date', 'orders.total_amount', 'orders.status', 'orders.shipping_address')
+            ->orderByDesc('orders.order_date')
+            ->get();
+    }
+
+    public static function getOrderById($orderId)
+    {
+        return DB::table('orders')
+            ->where('order_id', $orderId)
+            ->first();
+    }
+
+    public static function getOrderDetails($orderId)
+    {
+        return DB::table('order_details')
+            ->where('order_id', $orderId)
+            ->leftJoin('products', 'order_details.product_id', '=', 'products.product_id')
+            ->select(
+                'order_details.order_id',
+                'order_details.product_id',
+                'order_details.quantity',
+                'order_details.price',
+                'products.product_name'
+            )
+            ->get();
+    }
+
+    public static function updateOrderStatus($orderId, $status)
+    {
+        return DB::table('orders')
+            ->where('order_id', $orderId)
+            ->update(['status' => $status]);
+    }
 }

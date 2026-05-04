@@ -66,14 +66,4 @@ class OrderController extends Controller
         }
         return view('order-success', ['order_id' => request()->query('order_id')]);
     }
-
-    public function listOrders()
-    {
-        if (!session('logged_in') || session('role') !== 'admin') {
-            return redirect('/')->with('error', 'Bạn không có quyền truy cập');
-        }
-
-        $orders = Order::getOrdersWithUser();
-        return view('orders', compact('orders'));
-    }
 }
