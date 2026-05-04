@@ -28,6 +28,9 @@ class Order
                 $subtotal += $price * $quantity;
 
                 self::ensureProductExists($productId, $price);
+                
+                // Trừ số lượng tồn kho (Số lượng đã được kiểm tra ở bước Thanh toán)
+                DB::table('products')->where('product_id', $productId)->decrement('stock', $quantity);
 
                 DB::table('order_details')->insert([
                     'order_id' => $orderId,

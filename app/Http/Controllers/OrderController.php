@@ -40,7 +40,17 @@ class OrderController extends Controller
 
         $cart = json_decode($request->input('cart', '[]'), true);
         if (empty($cart)) {
-            return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống');
+            return redirect('/cart');
+        }
+
+        // Kiểm tra tồn kho trước khi tạo đơn hàng
+        foreach ($cart as $item) {
+            $product = \App\Models\Product::getProductById($item['id']);
+            if (!$product || $product->stock < $item['quantity']) {
+                $pName = $product ? $product->product_name : "Sản phẩm #".$item['id'];
+                
+                return redirect('/cart')->with('error', "Sản phẩm '{$pName}' không đủ số lượng trong kho. Xin liên hệ với chúng tôi qua Hotline: 0123.456.789 để được hỗ trợ.");
+            }
         }
 
         try {

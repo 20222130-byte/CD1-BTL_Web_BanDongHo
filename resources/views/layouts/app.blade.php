@@ -22,6 +22,7 @@
             background: linear-gradient(135deg, #1e293b, #0f172a) !important;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             padding: 1rem 0;
+            z-index: 1050;
         }
         .navbar-brand {
             font-weight: 700;
@@ -109,16 +110,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item me-2">
-                    <a href="/wishlist" class="btn btn-outline-light">
-                        <i class="bi bi-heart"></i> Yêu Thích
-                    </a>
-                </li>
-                <li class="nav-item me-2">
-                    <a href="@if(session('logged_in'))/cart @else /login?next=/cart @endif" class="btn btn-outline-light">
-                        <i class="bi bi-cart"></i> Giỏ Hàng
-                    </a>
-                </li>
                 @if (session('logged_in'))
                     <li class="nav-item dropdown me-2">
                         <a class="nav-link dropdown-toggle text-white d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -129,8 +120,8 @@
                             @endif
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="userDropdown" style="border-radius: 12px;">
-                            <li><a class="dropdown-item py-2" href="/profile"><i class="bi bi-person me-2"></i> Hồ sơ cá nhân</a></li>
                             <li><a class="dropdown-item py-2" href="/my-orders"><i class="bi bi-bag me-2"></i> Đơn hàng của tôi</a></li>
+                            <li><a class="dropdown-item py-2" href="/profile"><i class="bi bi-person me-2"></i> Hồ sơ cá nhân</a></li>
                             @if (session('role') === 'admin')
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item py-2" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard Admin</a></li>
@@ -151,6 +142,17 @@
                         </a>
                     </li>
                 @endif
+
+                <li class="nav-item me-2">
+                    <a href="@if(session('logged_in'))/cart @else /login?next=/cart @endif" class="btn btn-outline-light">
+                        <i class="bi bi-cart"></i> Giỏ Hàng
+                    </a>
+                </li>
+                <li class="nav-item me-2">
+                    <a href="/wishlist" class="btn btn-outline-light">
+                        <i class="bi bi-heart"></i> Yêu Thích
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

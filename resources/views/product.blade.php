@@ -38,9 +38,12 @@
 
                             <div class="d-flex align-items-center gap-3 mb-4">
                                 <h3 class="text-danger fw-bold mb-0">{{ number_format($product->price, 0, ',', '.') }} VNĐ</h3>
-                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
-                                    <i class="bi bi-check2-circle me-1"></i> Còn hàng
-                                </span>
+                                <div class="d-flex flex-column">
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 mb-1">
+                                        <i class="bi bi-check2-circle me-1"></i> Còn hàng
+                                    </span>
+                                    <small class="text-muted"><i class="bi bi-box-seam me-1"></i> Số lượng trong kho: <span class="fw-bold text-primary">{{ $product->stock }}</span></small>
+                                </div>
                             </div>
 
                             <div class="mb-4">

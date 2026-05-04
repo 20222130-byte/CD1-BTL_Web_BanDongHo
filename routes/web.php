@@ -23,6 +23,7 @@ Route::get('/checkout', [OrderController::class, 'showCheckout']);
 Route::post('/process-payment', [OrderController::class, 'processPayment']);
 Route::get('/order-success', [OrderController::class, 'showOrderSuccess']);
 Route::get('/orders', [OrderController::class, 'listOrders']);
+Route::get('/order-manage', [OrderController::class, 'listOrders']);
 Route::get('/my-orders', [OrderController::class, 'myOrders']);
 Route::post('/order-update-status/{id}', [OrderController::class, 'updateStatus']);
 

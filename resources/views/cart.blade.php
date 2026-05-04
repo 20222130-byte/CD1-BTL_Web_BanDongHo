@@ -8,6 +8,13 @@
     <div class="row g-4">
         <!-- Cart Items List -->
         <div class="col-lg-8">
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="fw-bold mb-1"><i class="bi bi-cart3 text-primary me-2"></i> Giỏ Hàng</h2>
@@ -214,11 +221,27 @@
         updateTotal(subtotal);
     }
 
-    function changeQuantity(productId, delta) {
+    async function changeQuantity(productId, delta) {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         const index = cart.findIndex(item => item.id == productId);
         if (index !== -1) {
-            cart[index].quantity = Math.max(1, (parseInt(cart[index].quantity) || 1) + delta);
+            const currentQty = parseInt(cart[index].quantity) || 1;
+            const newQty = currentQty + delta;
+
+            if (delta > 0) {
+                try {
+                    const response = await fetch(`${window.appConfig.baseUrl}/api/product/${productId}`);
+                    const data = await response.json();
+                    if (data.success && data.product.stock < newQty) {
+                        showToast(`Sản phẩm này chỉ còn ${data.product.stock} trong kho. Vui lòng liên hệ Hotline: 0123.456.789 để được hỗ trợ.`, 'warning');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error checking stock:', error);
+                }
+            }
+
+            cart[index].quantity = Math.max(1, newQty);
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
         }
@@ -271,13 +294,50 @@
         setTimeout(() => toastContainer.remove(), 3000);
     }
 
-    function checkout() {
+    async function checkout() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         if (cart.length === 0) {
             showToast('Giỏ hàng của bạn đang trống!', 'danger');
             return;
         }
-        window.location.href = '/checkout';
+
+        const checkoutBtn = document.querySelector('button[onclick="checkout()"]');
+        const originalContent = checkoutBtn.innerHTML;
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang kiểm tra...';
+
+        try {
+            for (const item of cart) {
+                const response = await fetch(`${window.appConfig.baseUrl}/api/product/${item.id}`);
+                const data = await response.json();
+                if (data.success && data.product.stock < item.quantity) {
+                    // Hiển thị lỗi ngay lập tức mà không reload trang
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger alert-dismissible fade show mb-4 shadow-sm border-0 rounded-4';
+                    errorDiv.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                            <div>
+                                <strong>Lỗi tồn kho:</strong> Sản phẩm '${data.product.product_name}' không đủ số lượng. 
+                                <br>Vui lòng liên hệ <a href="tel:0123456789" class="alert-link">0123.456.789</a> để được hỗ trợ.
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    const container = document.querySelector('.col-lg-8');
+                    container.insertBefore(errorDiv, container.firstChild);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.innerHTML = originalContent;
+                    return;
+                }
+            }
+            window.location.href = '/checkout';
+        } catch (error) {
+            console.error('Error during checkout check:', error);
+            window.location.href = '/checkout'; // Tiếp tục luồng bình thường nếu có lỗi mạng
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
