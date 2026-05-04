@@ -64,9 +64,10 @@
                         <i class="bi bi-credit-card-2-back me-2"></i> TIẾN HÀNH THANH TOÁN
                     </button>
                     
-                    <div class="text-center">
-                        <img src="https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg" height="30" class="me-2 opacity-75">
-                        <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" height="30" class="opacity-75">
+                    <div class="text-center d-flex align-items-center justify-content-center gap-3">
+                        <img src="https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg" height="25" class="opacity-75" title="VNPAY">
+                        <img src="https://img.mservice.com.vn/app/img/portal_documents/momo-icon-rectangle.png" height="25" class="opacity-75" title="MoMo">
+                        <img src="https://vinadesign.vn/uploads/images/2023/05/bidv-logo-vinadesign-25-14-30-52.jpg" height="25" class="opacity-75" title="BIDV">
                     </div>
                 </div>
             </div>
