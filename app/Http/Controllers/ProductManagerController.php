@@ -48,7 +48,8 @@ class ProductManagerController extends Controller
         }
 
         $categories = Category::getAllCategories();
-        return view('product-edit', compact('product', 'categories'));
+        $productCategories = Product::getCategoriesByProductId($id);
+        return view('product-edit', compact('product', 'categories', 'productCategories'));
     }
 
     public function create()
@@ -73,8 +74,12 @@ class ProductManagerController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'category_id' => 'nullable|integer',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'integer',
         ]);
+
+        $categoryIds = $request->input('category_ids', []);
+        $validated['category_id'] = $categoryIds[0] ?? null;
 
         if ($request->hasFile('image')) {
             $imageName = time().'.'.$request->image->extension();  
@@ -85,6 +90,7 @@ class ProductManagerController extends Controller
 
         try {
             $productId = Product::createProduct($validated);
+            Product::syncCategories($productId, $categoryIds);
             return redirect('/product-manager')->with('success', 'Thêm sản phẩm thành công! ID: ' . $productId);
         } catch (\Throwable $e) {
             return redirect('/product-create')->with('error', 'Lỗi khi thêm sản phẩm: ' . $e->getMessage());
@@ -111,6 +117,9 @@ class ProductManagerController extends Controller
             'category_id' => 'nullable|integer',
         ]);
 
+        $categoryIds = $request->input('category_ids', []);
+        $validated['category_id'] = $categoryIds[0] ?? null;
+
         if ($request->hasFile('image')) {
             $imageName = time().'.'.$request->image->extension();  
             $request->image->move(public_path('images'), $imageName);
@@ -120,6 +129,7 @@ class ProductManagerController extends Controller
 
         try {
             Product::updateProduct($id, $validated);
+            Product::syncCategories($id, $categoryIds);
             return redirect('/product-manager')->with('success', 'Cập nhật sản phẩm thành công!');
         } catch (\Throwable $e) {
             return redirect('/product-edit/' . $id)->with('error', 'Lỗi khi cập nhật sản phẩm: ' . $e->getMessage());

@@ -26,7 +26,7 @@
 </div>
 
 <script>
-    function renderWishlist() {
+    async function renderWishlist() {
         const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
         const container = document.getElementById('wishlist-items');
         const emptyMessage = document.getElementById('wishlist-empty');
@@ -39,23 +39,63 @@
 
         container.style.display = 'flex';
         emptyMessage.style.display = 'none';
-        container.innerHTML = '';
+        container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Đang tải danh sách yêu thích...</p>
+            </div>
+        `;
 
-        wishlist.forEach(productId => {
+        const products = [];
+        for (const productId of wishlist) {
+            try {
+                const response = await fetch(`/api/product/${productId}`);
+                const data = await response.json();
+                if (data.success) {
+                    products.push(data.product);
+                }
+            } catch (error) {
+                console.error(`Error fetching product ${productId}:`, error);
+            }
+        }
+
+        if (products.length === 0) {
+            container.style.display = 'none';
+            emptyMessage.style.display = 'block';
+            return;
+        }
+
+        container.innerHTML = '';
+        products.forEach(product => {
+            let src = product.image_url;
+            if (src && !src.startsWith('http')) {
+                if (!src.startsWith('images/') && !src.startsWith('/images/')) {
+                    src = '/images/' + src.replace(/^\//, '');
+                } else {
+                    src = '/' + src.replace(/^\//, '');
+                }
+            } else if (!src) {
+                src = `https://via.placeholder.com/300x300?text=${encodeURIComponent(product.product_name)}`;
+            }
+
             const html = `
                 <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm h-100 hover-card" style="transition: all 0.3s;">
-                        <img src="https://via.placeholder.com/300x300?text=Đồng+Hồ+${productId}" class="card-img-top" style="height: 250px; object-fit: cover;">
-                        <div class="card-body">
-                            <h5 class="card-title">Đồng Hồ ${productId}</h5>
-                            <p class="card-text text-danger">
-                                <strong>${(1000000 + (productId * 35791) % 4000000).toLocaleString('vi-VN')} ₫</strong>
+                    <div class="card shadow-sm h-100 hover-card border-0 rounded-4 overflow-hidden" style="transition: all 0.3s;">
+                        <div class="position-relative">
+                            <img src="${src}" class="card-img-top" style="height: 250px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x300?text=Image+Error'">
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold text-truncate">${product.product_name}</h5>
+                            <p class="card-text text-danger h5 fw-bold mb-3">
+                                ${new Intl.NumberFormat('vi-VN').format(product.price)} ₫
                             </p>
                             <div class="d-flex gap-2">
-                                <a href="/product/${productId}" class="btn btn-sm btn-primary flex-grow-1">
-                                    <i class="bi bi-eye"></i> Xem
+                                <a href="/product/${product.product_id}" class="btn btn-primary flex-grow-1 rounded-pill">
+                                    <i class="bi bi-eye me-1"></i> Xem chi tiết
                                 </a>
-                                <button onclick="removeFromWishlist(${productId})" class="btn btn-sm btn-outline-danger">
+                                <button onclick="removeFromWishlist(${product.product_id})" class="btn btn-outline-danger rounded-circle p-2" style="width: 40px; height: 40px;">
                                     <i class="bi bi-heart-fill"></i>
                                 </button>
                             </div>
@@ -79,17 +119,21 @@
         renderWishlist();
 
         // Show notification
-        const message = document.createElement('div');
-        message.className = 'alert alert-info alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
-        message.innerHTML = `
-            <i class="bi bi-check-circle"></i> Đã xóa khỏi danh sách yêu thích!
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        const toastContainer = document.createElement('div');
+        toastContainer.className = 'position-fixed bottom-0 start-50 translate-middle-x p-3';
+        toastContainer.style.zIndex = '2000';
+        toastContainer.innerHTML = `
+            <div class="toast show align-items-center text-white bg-dark border-0 rounded-pill shadow-lg" role="alert">
+                <div class="d-flex px-3 py-2">
+                    <div class="toast-body fw-medium">
+                        <i class="bi bi-heart-fill text-danger me-2"></i> Đã xóa khỏi danh sách yêu thích!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
         `;
-        document.body.appendChild(message);
-
-        setTimeout(() => {
-            message.remove();
-        }, 3000);
+        document.body.appendChild(toastContainer);
+        setTimeout(() => toastContainer.remove(), 3000);
     }
 
     document.addEventListener('DOMContentLoaded', renderWishlist);
@@ -97,8 +141,14 @@
 
 <style>
     .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+    .card-img-top {
+        transition: transform 0.5s ease;
+    }
+    .hover-card:hover .card-img-top {
+        transform: scale(1.05);
     }
 </style>
 @endsection

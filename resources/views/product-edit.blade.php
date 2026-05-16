@@ -23,12 +23,6 @@
                         </div>
                     @endif
 
-                    @if ($message = Session::get('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle"></i> {{ $message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
 
                     <form action="/product-update/{{ $product->product_id }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -91,24 +85,29 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="category_id" class="form-label">Danh Mục</label>
-                            <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id">
-                                <option value="">-- Chọn danh mục --</option>
-                                @php
-                                    $groupedCats = collect($categories)->groupBy('description');
-                                @endphp
+                            <label class="form-label d-block fw-bold">Danh Mục Sản Phẩm</label>
+                            <p class="text-muted small mb-3">Chọn một danh mục phù hợp cho từng nhóm bên dưới:</p>
+                            @php
+                                $groupedCats = collect($categories)->groupBy('description');
+                            @endphp
+                            <div class="row">
                                 @foreach($groupedCats as $group => $cats)
-                                    <optgroup label="{{ $group ?: 'Khác' }}">
-                                        @foreach($cats as $category)
-                                            <option value="{{ $category->category_id }}" {{ old('category_id', $product->category_id) == $category->category_id ? 'selected' : '' }}>
-                                                {{ $category->category_name }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-primary small fw-bold">{{ $group ?: 'Khác' }}</label>
+                                        <select class="form-select @error('category_ids') is-invalid @enderror" name="category_ids[]">
+                                            <option value="">-- Chọn {{ $group ?: 'danh mục' }} --</option>
+                                            @foreach($cats as $category)
+                                                <option value="{{ $category->category_id }}" 
+                                                    {{ in_array($category->category_id, old('category_ids', $productCategories ?? [])) ? 'selected' : '' }}>
+                                                    {{ $category->category_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 @endforeach
-                            </select>
-                            @error('category_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            </div>
+                            @error('category_ids')
+                                <div class="text-danger small">{{ $message }}</div>
                             @enderror
                         </div>
 

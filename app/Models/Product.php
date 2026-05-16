@@ -63,4 +63,33 @@ class Product
             'low_stock' => DB::table('products')->where('stock', '<', 10)->count(),
         ];
     }
+
+    public static function getCategoriesByProductId($id)
+    {
+        return DB::table('product_categories')
+            ->where('product_id', $id)
+            ->pluck('category_id')
+            ->toArray();
+    }
+
+    public static function syncCategories($productId, $categoryIds)
+    {
+        DB::table('product_categories')->where('product_id', $productId)->delete();
+        
+        $data = [];
+        foreach ($categoryIds as $catId) {
+            if ($catId) {
+                $data[] = [
+                    'product_id' => $productId,
+                    'category_id' => $catId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+        
+        if (!empty($data)) {
+            DB::table('product_categories')->insert($data);
+        }
+    }
 }

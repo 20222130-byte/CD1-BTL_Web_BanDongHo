@@ -21,7 +21,16 @@ class ProductController extends Controller
         }
 
         if (request('category')) {
-            $query->where('category_id', request('category'));
+            $catId = request('category');
+            $query->where(function($q) use ($catId) {
+                $q->where('category_id', $catId)
+                  ->orWhereExists(function ($sub) use ($catId) {
+                      $sub->select(DB::raw(1))
+                          ->from('product_categories')
+                          ->whereColumn('product_categories.product_id', 'products.product_id')
+                          ->where('product_categories.category_id', $catId);
+                  });
+            });
         }
 
         $products = $query->orderByDesc('created_at')->get();
