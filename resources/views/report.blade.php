@@ -132,13 +132,32 @@
     <div class="col-md-3">
         <div class="card shadow-sm metric-card" style="border-left-color: #f25287;">
             <div class="card-body">
-                <p class="metric-label"><i class="bi bi-cash-coin"></i> Tổng Doanh Thu</p>
+                <p class="metric-label"><i class="bi bi-cash-coin"></i> Doanh Thu Thực Tế</p>
                 <p class="metric-value text-danger">{{ number_format($summary['total_revenue'], 0, ',', '.') }}₫</p>
-                <small class="text-muted">Toàn bộ doanh thu</small>
+                <small class="text-muted">Đơn hàng đã giao thành công</small>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Extra Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-info border-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Doanh Thu Chờ Xử Lý</p>
+                        <h4 class="mb-0 text-info">{{ number_format($summary['pending_revenue'], 0, ',', '.') }}₫</h4>
+                    </div>
+                    <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                        <i class="bi bi-hourglass-split text-info fs-4"></i>
+                    </div>
+                </div>
+                <small class="text-muted">Từ {{ $orderStatuses->whereIn('status', ['confirmed', 'processing', 'delivery'])->sum('count') }} đơn hàng đang xử lý</small>
+            </div>
+        </div>
+    </div>
 
 <!-- Secondary Metrics -->
 <div class="row g-3 mb-4">
@@ -248,7 +267,7 @@
     <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-header bg-light border-0">
-                <h5 class="mb-0"><i class="bi bi-trophy"></i> Top 5 Sản Phẩm Bán Chạy</h5>
+                <h5 class="mb-0"><i class="bi bi-trophy"></i> Top 5 Sản Phẩm Bán Chạy (Đã Giao)</h5>
             </div>
             <div class="card-body">
                 @if($topProducts->count())

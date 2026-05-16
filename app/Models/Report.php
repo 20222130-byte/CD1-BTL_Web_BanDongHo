@@ -12,7 +12,14 @@ class Report
             'total_users' => DB::table('users')->count(),
             'total_products' => DB::table('products')->count(),
             'total_orders' => DB::table('orders')->count(),
-            'total_revenue' => DB::table('orders')->sum('total_amount') ?? 0,
+            // Chỉ tính doanh thu từ các đơn hàng đã giao thành công
+            'total_revenue' => DB::table('orders')
+                ->where('status', 'delivered')
+                ->sum('total_amount') ?? 0,
+            // Doanh thu đang chờ (đã xác nhận, đang xử lý, đang giao)
+            'pending_revenue' => DB::table('orders')
+                ->whereIn('status', ['confirmed', 'processing', 'delivery'])
+                ->sum('total_amount') ?? 0,
             'total_payments' => DB::table('payments')->count(),
         ];
     }
@@ -37,6 +44,8 @@ class Report
     {
         return DB::table('order_details')
             ->join('products', 'order_details.product_id', '=', 'products.product_id')
+            ->join('orders', 'order_details.order_id', '=', 'orders.order_id')
+            ->where('orders.status', 'delivered')
             ->select('products.product_name', DB::raw('SUM(order_details.quantity) as sold_quantity'))
             ->groupBy('products.product_name')
             ->orderByDesc('sold_quantity')
