@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use App\Models\Payment;
 
@@ -39,9 +40,24 @@ class OrderController extends Controller
         ]);
 
         $cart = json_decode($request->input('cart', '[]'), true);
-        if (empty($cart)) {
+        if (!is_array($cart) || empty($cart)) {
             return redirect('/cart');
         }
+
+        $filteredCart = [];
+        foreach ($cart as $item) {
+            $productId = isset($item['id']) ? intval($item['id']) : 0;
+            $quantity = max(1, intval($item['quantity'] ?? 0));
+            if ($productId > 0 && $quantity > 0) {
+                $filteredCart[] = ['id' => $productId, 'quantity' => $quantity];
+            }
+        }
+
+        if (empty($filteredCart)) {
+            return redirect('/cart');
+        }
+
+        $cart = $filteredCart;
 
         // Kiểm tra tồn kho trước khi tạo đơn hàng
         foreach ($cart as $item) {
@@ -65,7 +81,19 @@ class OrderController extends Controller
             return redirect('/order-success?order_id=' . $orderId)
                 ->with('success', 'Thanh toán thành công! Đơn hàng #' . $orderId . ' đã được tạo.');
         } catch (\Throwable $e) {
-            return redirect('/checkout')->with('error', 'Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại.');
+            Log::error('Order processing failed', [
+                'user_id' => session('user_id'),
+                'cart' => $cart,
+                'payment_method' => $validated['payment_method'],
+                'error' => $e->getMessage(),
+            ]);
+
+            $message = 'Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại.';
+            if (config('app.debug')) {
+                $message = $e->getMessage();
+            }
+
+            return redirect('/checkout')->with('error', $message);
         }
     }
 

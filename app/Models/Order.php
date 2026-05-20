@@ -25,15 +25,13 @@ class Order
                 $productId = intval($item['id']);
                 $quantity = max(1, intval($item['quantity'] ?? 1));
                 
-                // Lấy giá thực tế từ database thay vì dùng công thức hardcoded
                 $product = DB::table('products')->where('product_id', $productId)->first();
-                $price = $product ? $product->price : (1000000 + (($productId * 35791) % 4000000));
-                
-                $subtotal += $price * $quantity;
-
                 if (!$product) {
-                    self::ensureProductExists($productId, $price);
+                    throw new \Exception("Sản phẩm #{$productId} không tồn tại hoặc đã bị xóa.");
                 }
+
+                $price = $product->price;
+                $subtotal += $price * $quantity;
                 
                 // Trừ số lượng tồn kho
                 DB::table('products')->where('product_id', $productId)->decrement('stock', $quantity);
