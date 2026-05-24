@@ -178,11 +178,11 @@ Sau khi chạy `php artisan db:seed`, bạn có thể đăng nhập:
 
 **Tài khoản Admin:**
 - Email: `admin@example.com`
-- Password: `password`
+- Password: `12345678`
 
 **Tài khoản Người Dùng (nếu có):**
 - Email: `user@example.com`
-- Password: `password`
+- Password: `12345678`
 
 ---
 
